@@ -1,0 +1,491 @@
+<div ng-view>
+    <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h5><i class="fa fa-layer-group"></i>
+                {{'setting' | translate}}
+                <i class="fa fa-angle-double-right"></i>
+                  {{'branch' | translate}}</h5>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a routerLink ="/home">{{'home' | translate}}</a></li>
+                <li class="breadcrumb-item active">{{'branch' | translate}}</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row mb-2">
+                    <div class="col-md-9">
+                        <a  class="btn btn-success" (click)="opencreateModal()"><i class="fa fa-plus"></i></a>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="search">{{'search' | translate}}</label>
+                          <input type="text" class="form-control" [(ngModel)]="searchT" placeholder="{{'search' | translate}}">
+                        </div>
+                    </div>
+                 </div>
+                  <div class="table-responsive mt-2" *ngIf="!loading">
+                    <table id="" class="table table-bordered table-striped" style="white-space:nowrap;">
+                      <thead class="bg-info">
+                      <tr class="text-center">
+                        <th>{{'no' | translate}}</th>
+                        <th>{{'logo' | translate}}</th>
+                        <th>{{'code' | translate}}</th>
+                        <th>{{'name_la' | translate}}</th>
+                        <th>{{'name_en' | translate}}</th>
+                        <th>{{'phone' | translate}}</th>
+                        <th>{{'address' | translate}}</th>
+                        <th>{{'note' | translate}}</th>
+                        <th>{{'create_date' | translate}}</th>
+                        <th>{{'status' | translate}}</th>
+                        <th>{{'action' | translate}}</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let data of dataList | filter: searchT | paginate: { itemsPerPage: 10, currentPage: page, totalItems: count}; index as i">
+                            <td class="text-center">
+                              <span *ngIf="page==1">{{(i+1)}}</span>
+                              <span *ngIf="page>1">{{((page-1)*10)+(i+1)}}</span>
+                            </td>
+                            <td class="text-center">
+                              <a href="https://localhost:7047/Branches/{{data.logo}}" *ngIf="data.logo !='null'">
+                                 <img src="https://localhost:7047/Branches/{{data.logo}}" width="50">
+                              </a>
+                           </td>
+                            <td>{{data.code}}</td>
+                            <td>{{data.name_la}}</td>
+                            <td>{{data.name_en}}</td>
+                            <td >{{data.phone}}</td>
+                            <td >{{'village' | translate}} {{data.vill_la}}, {{'district' | translate}} {{data.dis_la}}, {{'province' | translate}} {{data.pro_la}}</td>
+                            <td >{{data.note}}</td>
+                            <td >{{data.created_at | date:'dd/MM/yyyy, hh:mm'}}</td>
+                            <td class="text-center">
+                                <h6 *ngIf="data.status ==1" class="text-success"><b>{{'active' | translate}}</b></h6>
+                                <h6 *ngIf="data.status ==0" class="text-danger"><b>{{'no_active' | translate}}</b></h6>
+                            </td>
+                            <td class="text-center">
+                                <button  type="button" class="btn btn-warning btn-sm" (click)="openeditModal(data)"><i class="fas fa-pencil-alt"></i></button>&nbsp;
+                                <button  type="button" class="btn btn-danger btn-sm" (click)="opendeleteModal(data)"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="text-center mt-2">
+                      <pagination-controls  previousLabel="Preview" nextLabel="Next" (pageChange)="page = ($event)"></pagination-controls>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center" *ngIf="loading">
+                  <img src="assets/img/loading.gif" alt="" width="100" height="100">
+               </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- /.modal-create -->
+      <div class="modal fade" id="modal-edit"> 
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fa fa-pencil-alt"></i> {{'edit' | translate}}</h4>
+                  <button type="button" class="close" (click)="closecreateModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                            <form [formGroup]="form">
+                              <div class="row">
+                                <div class="col-md-4">
+                                      <div *ngIf="model.logo !='null' && logoToUpload == undefined">
+                                        <img src="https://localhost:7047/Branches/{{model.logo}}" width="100">
+                                      </div>
+                                      <img [src]="logoUrl" width="100">
+                                </div>
+                                <div class="col-md-4">
+                                  <div *ngIf="model.profile!='null' && profileToUpload == undefined">
+                                    <img src="https://localhost:7047/Branches/{{model.profile}}" width="100">
+                                  </div>
+                                  <img [src]="profileUrl" width="100">
+                              </div>
+                              </div>
+                            <div class="row">
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                    <label for="exampleInputFile">{{'logo' | translate}}</label>
+                                    <div class="input-group">
+                                      <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="exampleInputFile" #Image accept="image/*" (change)="handleFileLogoInput($any($event).target.files)">
+                                        <label class="custom-file-label" for="exampleInputFile">{{'choose_image' | translate}}</label>
+                                      </div>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label for="exampleInputFile">{{'corporate_image' | translate}}</label>
+                                  <div class="input-group">
+                                    <div class="custom-file">
+                                      <input type="file" class="custom-file-input" id="exampleInputFile" #Image accept="image/*" (change)="handleFileProfileInput($any($event).target.files)">
+                                      <label class="custom-file-label" for="exampleInputFile">{{'choose_image' | translate}}</label>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                    <label for="">{{'code' | translate}}</label>
+                                    <input [ngClass]="{ 'is-invalid': submitted && f['code'].errors}" formControlName="code" [(ngModel)]="model.code" class="form-control" placeholder="{{'code' | translate}}">
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                  <div class="form-group">
+                                    <label for="">{{'name_la' | translate}}</label>
+                                    <input [ngClass]="{'is-invalid': submitted && f['name_la'].errors}" formControlName="name_la" [(ngModel)]="model.name_la" class="form-control" placeholder="{{'name_la' | translate}}">
+                                    <div *ngIf="submitted && f['name_la'].errors" class="is-invalid">
+                                      <span *ngIf="f['name_la'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label for="">{{'name_en' | translate}}</label>
+                                  <input [ngClass]="{'is-invalid': submitted && f['name_en'].errors}" formControlName="name_en" [(ngModel)]="model.name_en" class="form-control" placeholder="{{'name_en' | translate}}">
+                                <div *ngIf="submitted && f['name_en'].errors" class="is-invalid">
+                                  <span *ngIf="f['name_en'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                </div>
+                                </div>
+                            </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label for="">{{'phone' | translate}}</label>
+                                  <input  [ngClass]="{ 'is-invalid': submitted && f['phone'].errors}" formControlName="phone" [(ngModel)]="model.phone" class="form-control" placeholder="{{'phone' | translate}}">
+                                  <div *ngIf="submitted && f['phone'].errors" class="is-invalid">
+                                    <span *ngIf="f['phone'].errors['required']" class="text-danger">{{'required_phone' | translate}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-12">
+                                <div class="form-group">
+                                  <label for="">{{'address' | translate}}</label>
+                                  <input formControlName="adress" [(ngModel)]="model.adress" class="form-control" placeholder="{{'address' | translate}}">
+                                </div>
+                              </div>
+                            <div class="col-md-4">
+                                  <div class="form-group">
+                                    <label for="">{{'province' | translate}}</label>
+                                    <select formControlName="pro_id" (change)="onSelectedDistrict($event)"  [(ngModel)]="model.pro_id" class="form-control">
+                                      <option value="">{{'select' | translate}}</option>
+                                      <option *ngFor="let item of provinceList" value="{{item.id}}">{{item.name}}</option>
+                                    </select>
+                                  </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                      <label for="">{{'district' | translate}}</label>
+                                      <select formControlName="dis_id" [(ngModel)]="model.dis_id" (change)="onSelectedVillage($event)" class="form-control">
+                                        <option value="">{{'select' | translate}}</option>
+                                        <option *ngFor="let d of districtList" value="{{d.code}}">{{d.name}}</option>
+                                      </select>
+                                </div>
+                          </div>
+                          <div class="col-md-4">
+                                <div class="form-group">
+                                      <label for="">{{'village' | translate}}</label>
+                                      <select formControlName="vill_id" [(ngModel)]="model.vill_id" class="form-control">
+                                        <option value="">{{'select' | translate}}</option>
+                                        <option *ngFor="let v of villageList" [ngValue]="v.id">{{v.name}}</option>
+                                      </select>
+                                </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'sign1' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['sign1'].errors}" formControlName="sign1" [(ngModel)]="model.sign1" class="form-control" placeholder="{{'sign1' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'sign2' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['sign2'].errors}" formControlName="sign2" [(ngModel)]="model.sign2" class="form-control" placeholder="{{'sign2' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'sign3' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['sign3'].errors}" formControlName="sign3" [(ngModel)]="model.sign3" class="form-control" placeholder="{{'sign3' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'sign4' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['sign4'].errors}" formControlName="sign4" [(ngModel)]="model.sign4" class="form-control" placeholder="{{'sign4' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="">{{'LinkWhatsapp' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['LinkWhatsapp'].errors}" formControlName="LinkWhatsapp" [(ngModel)]="model.LinkWhatsapp" class="form-control" placeholder="{{'LinkWhatsapp' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="">{{'LinkFaceBook' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['LinkFaceBook'].errors}" formControlName="LinkFaceBook" [(ngModel)]="model.LinkFaceBook" class="form-control" placeholder="{{'LinkFaceBook' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="">{{'LinkYoutube' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['LinkYoutube'].errors}" formControlName="LinkYoutube" [(ngModel)]="model.LinkYoutube" class="form-control" placeholder="{{'LinkYoutube' | translate}}">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="">{{'LinkGoogleMap' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['LinkGoogleMap'].errors}" formControlName="LinkGoogleMap" [(ngModel)]="model.LinkGoogleMap" class="form-control" placeholder="{{'LinkGoogleMap' | translate}}">
+                            </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="">{{'note' | translate}}</label>
+                            <input  [ngClass]="{ 'is-invalid': submitted && f['note'].errors}" formControlName="note" [(ngModel)]="model.note" class="form-control" placeholder="{{'note' | translate}}">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">
+                          <div class="form-group">
+                            <label for="">{{'status' | translate}}</label>
+                            <select name="" id="" class="form-control" formControlName="status" [(ngModel)]="status">
+                               <option value="1">{{'active' | translate}}</option>
+                               <option value="0">{{'no_active' | translate}}</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      </form>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-warning" (click)="updateData()"><i class="fas fa-pencil-alt"></i>&nbsp;{{'save' | translate}}</button>
+                          <button type="button" class="btn btn-danger" (click)="closeeditModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+      <!-- /.modal-edit -->
+      <div class="modal fade" id="modal-add"> 
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fa fa-plus"></i> {{'add' | translate}}</h4>
+                  <button type="button" class="close" (click)="closecreateModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="form">
+                         <div class="row">
+                            <div class="col-md-4">
+                                  <img [src]="logoUrl" width="100">
+                            </div>
+                            <div class="col-md-4">
+                              <img [src]="profileUrl" width="100">
+                          </div>
+                         </div>
+                        <div class="row">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="exampleInputFile">{{'logo' | translate}}</label>
+                                <div class="input-group">
+                                  <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="exampleInputFile" #Image accept="image/*" (change)="handleFileLogoInput($any($event).target.files)">
+                                    <label class="custom-file-label" for="exampleInputFile">{{'choose_image' | translate}}</label>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="exampleInputFile">{{'corporate_image' | translate}}</label>
+                              <div class="input-group">
+                                <div class="custom-file">
+                                  <input type="file" class="custom-file-input" id="exampleInputFile" #Image accept="image/*" (change)="handleFileProfileInput($any($event).target.files)">
+                                  <label class="custom-file-label" for="exampleInputFile">{{'choose_image' | translate}}</label>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="">{{'code' | translate}}</label>
+                                <input [ngClass]="{ 'is-invalid': submitted && f['code'].errors}" formControlName="code" [(ngModel)]="model.code" class="form-control" placeholder="{{'code' | translate}}">
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="">{{'name_la' | translate}}</label>
+                                <input [ngClass]="{'is-invalid': submitted && f['name_la'].errors}" formControlName="name_la" [(ngModel)]="model.name_la" class="form-control" placeholder="{{'name_la' | translate}}">
+                                <div *ngIf="submitted && f['name_la'].errors" class="is-invalid">
+                                  <span *ngIf="f['name_la'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="">{{'name_en' | translate}}</label>
+                              <input [ngClass]="{'is-invalid': submitted && f['name_en'].errors}" formControlName="name_en" [(ngModel)]="model.name_en" class="form-control" placeholder="{{'name_en' | translate}}">
+                                <div *ngIf="submitted && f['name_en'].errors" class="is-invalid">
+                                  <span *ngIf="f['name_en'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                </div>
+                            </div>
+                        </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="">{{'phone' | translate}}</label>
+                              <input  [ngClass]="{ 'is-invalid': submitted && f['phone'].errors}" formControlName="phone" [(ngModel)]="model.phone" class="form-control" placeholder="{{'phone' | translate}}">
+                              <div *ngIf="submitted && f['phone'].errors" class="is-invalid">
+                                <span *ngIf="f['phone'].errors['required']" class="text-danger">{{'required_phone' | translate}}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label for="">{{'address' | translate}}</label>
+                              <input formControlName="adress" [(ngModel)]="model.adress" class="form-control" placeholder="{{'address' | translate}}">
+                            </div>
+                          </div>
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="">{{'province' | translate}}</label>
+                                <select  formControlName="pro_id" (change)="onSelectedDistrict($event)"  [(ngModel)]="model.pro_id" class="form-control">
+                                  <option value="">{{'select' | translate}}</option>
+                                  <option *ngFor="let item of provinceList" value="{{item.id}}">{{item.name}}</option>
+                                </select>
+                              </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="">{{'district' | translate}}</label>
+                              <select formControlName="dis_id" [(ngModel)]="model.dis_id" (change)="onSelectedVillage($event)" class="form-control">
+                                <option value="">{{'select' | translate}}</option>
+                                <option *ngFor="let d of districtList" value="{{d.code}}">{{d.name}}</option>
+                            </select>
+                            </div>
+                      </div>
+                      <div class="col-md-4">
+                            <div class="form-group">
+                                  <label for="">{{'village' | translate}}</label>
+                                  <select formControlName="vill_id" [(ngModel)]="model.vill_id" class="form-control">
+                                    <option value="">{{'select' | translate}}</option>
+                                    <option *ngFor="let v of villageList" [ngValue]="v.id">{{v.name}}</option>
+                                </select>
+                            </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'sign1' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['sign1'].errors}" formControlName="sign1" [(ngModel)]="model.sign1" class="form-control" placeholder="{{'sign1' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'sign2' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['sign2'].errors}" formControlName="sign2" [(ngModel)]="model.sign2" class="form-control" placeholder="{{'sign2' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'sign3' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['sign3'].errors}" formControlName="sign3" [(ngModel)]="model.sign3" class="form-control" placeholder="{{'sign3' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'sign4' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['sign4'].errors}" formControlName="sign4" [(ngModel)]="model.sign4" class="form-control" placeholder="{{'sign4' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'LinkWhatsapp' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['LinkWhatsapp'].errors}" formControlName="LinkWhatsapp" [(ngModel)]="model.LinkWhatsapp" class="form-control" placeholder="{{'LinkWhatsapp' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'LinkFaceBook' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['LinkFaceBook'].errors}" formControlName="LinkFaceBook" [(ngModel)]="model.LinkFaceBook" class="form-control" placeholder="{{'LinkFaceBook' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'LinkYoutube' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['LinkYoutube'].errors}" formControlName="LinkYoutube" [(ngModel)]="model.LinkYoutube" class="form-control" placeholder="{{'LinkYoutube' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'LinkGoogleMap' | translate}}</label>
+                          <input  [ngClass]="{ 'is-invalid': submitted && f['LinkGoogleMap'].errors}" formControlName="LinkGoogleMap" [(ngModel)]="model.LinkGoogleMap" class="form-control" placeholder="{{'LinkGoogleMap' | translate}}">
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="">{{'note' | translate}}</label>
+                        <input  [ngClass]="{ 'is-invalid': submitted && f['note'].errors}" formControlName="note" [(ngModel)]="model.note" class="form-control" placeholder="{{'note' | translate}}">
+                      </div>
+                    </div>
+                  </div>
+                  </form>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-success" (click)="createData(model)"><i class="fas fa-plus"></i>&nbsp;{{'save' | translate}}</button>
+                          <button type="button" class="btn btn-danger" (click)="closecreateModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+       <!-- /.modal-delete -->
+       <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{'title_delete' | translate}}</h4>
+                  <button type="button" class="close" (click)="closedeleteModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                      <div class="row">
+                          <div class="col-md-12">
+                            <h4>{{model.name_la}}</h4>
+                          </div>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-danger" (click)="deleteData()"><i class="fas fa-trash"></i>&nbsp;{{'delete' | translate}}</button>
+                          <button type="button" class="btn btn-warning" (click)="closedeleteModal()" data-dismiss="modal"><i class="fas fa-power-off"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+

@@ -1,0 +1,143 @@
+<div>
+    <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h5><i class="fa fa-layer-group"></i>
+                {{'setting' | translate}}
+                <i class="fa fa-angle-double-right"></i>
+                  {{'province' | translate}}</h5>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a routerLink="/home">{{'home' | translate}}</a></li>
+                <li class="breadcrumb-item active">{{'province' | translate}}</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+  
+            <!--Foram add new-->
+            <div class="col-md-4">
+              <div class="card card-default">
+  
+                <div class="card-header bg-info">
+                  <label>{{'add' | translate}}</label>
+                </div>
+                <form [formGroup]="form">
+                  <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                             <label>{{'name_la' | translate}} </label>
+                              <input   class="form-control" [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" formControlName="name" [(ngModel)]="model.name" placeholder="{{'name_la' | translate}}">
+                              <div *ngIf="submitted && f['name'].errors" class="is-invalid">
+                                <span *ngIf="f['name'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                             <label>{{'name_en' | translate}} </label>
+                              <input   class="form-control" [ngClass]="{ 'is-invalid': submitted && f['name_en'].errors }" formControlName="name_en" [(ngModel)]="model.name_en" placeholder="{{'name_en' | translate}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between md-2">
+                            <button type="button"  class="btn btn-success" *ngIf="hiddenId==''" (click)="createData()"><i class="fas fa-plus"></i>&nbsp;{{'save' | translate}}</button>
+                            <button type="button"  class="btn btn-warning" *ngIf="hiddenId=='edit'" (click)="updateData(model)"><i class="fas fa-pencil-alt"></i>&nbsp;{{'edit' | translate}}</button>
+                            <button type="button" (click)="resetField()" class="btn btn-primary">Clear</button>
+                        </div>
+                    </div>
+                </form>
+              </div>
+            </div>
+  
+            <!--List users- table table-bordered table-striped -->
+  
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header bg-info">
+                  <h3 class="card-title">{{'province' | translate}}</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body" *ngIf="!loading">
+                  <div class="row mb-2">
+                     <div class="col-md-4">
+                         <input type="text" class="form-control" [(ngModel)]="searchT" placeholder="{{'search' | translate}}">
+                     </div>
+                  </div>
+                    <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th class="text-center">{{'no' | translate}}</th>
+                        <th>{{'name_la' | translate}}</th>
+                        <th>{{'name_en' | translate}}</th>
+                        <th class="text-center">{{'action' | translate}}</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let data of dataList | filter: searchT | paginate: { itemsPerPage: 10, currentPage: page, totalItems: count}; index as i">
+                             <td class="text-center">
+                                <span *ngIf="page==1">{{(i+1)}}</span>
+                                <span *ngIf="page>1">{{((page-1)*10)+(i+1)}}</span>
+                              </td>
+                              <td>{{data.name}}</td>
+                              <td>
+                                {{data.name_en}}
+                              </td>
+                              <td class="text-center">
+                                  <button  type="button" class="btn btn-warning btn-sm" (click)="editData(data)"><i class="fas fa-pencil-alt"></i></button>&nbsp;
+                                  <button  type="button" class="btn btn-danger btn-sm" (click)="opendeleteModal(data)"><i class="fas fa-trash"></i></button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <div class="text-center mt-2">
+                    <pagination-controls  previousLabel="Preview" nextLabel="Next" (pageChange)="page = ($event)"></pagination-controls>
+                  </div>
+                </div>
+                  <div *ngIf="loading">
+                    <div class="text-center">
+                      <img src="assets/img/loading.gif" alt="" width="100" height="100">
+                    </div> 
+                  </div>             
+                </div> 
+                <!-- /.card-body -->
+              </div>
+            </div>
+        </div>
+      </section>
+  
+      <!-- /.modal-delete -->
+      <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">{{'delete' | translate}}</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h3>{{model.name}}</h3>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button  type="button" class="btn btn-danger" (click)="deleteData()"><i class="fas fa-trash"></i>&nbsp;{{'delete' | translate}}</button>
+              <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-power-off"></i>&nbsp;{{'close' | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  
+  

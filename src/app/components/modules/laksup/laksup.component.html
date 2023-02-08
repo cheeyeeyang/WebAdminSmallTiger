@@ -1,0 +1,664 @@
+<div ng-view>
+    <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h5><i class="fa fa-layer-group"></i>
+                  {{'guarantee_property' | translate}}</h5>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a routerLink="/home">{{'home' | translate}}</a></li>
+                <li class="breadcrumb-item active">{{'guarantee_property' | translate}}</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header bg-info">
+                        <div class="row justify-content-between">
+                            <h3 class="card-title">{{'category' | translate}}</h3> <a href="javascript:void(0)"><i (click)="opencreateCModal()" class="fa fa-plus text-white" style="font-size:16pt;"></i></a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr class="text-center">
+                              <!-- <th>{{'no' | translate}}</th> -->
+                              <th>{{'category' | translate}}</th>
+                              <th>{{'action' | translate}}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let data of categoryList | paginate: { itemsPerPage: 10, currentPage: page, totalItems: count}; index as i">
+                                  <!-- <td class="text-center">
+                                    <span *ngIf="page==1">{{(i+1)}}</span>
+                                    <span *ngIf="page>1">{{((page-1)*10)+(i+1)}}</span>
+                                  </td> -->
+                                  <td>{{data.name}}</td>
+                                  <td class="text-center">
+                                        <a href="javascript:void(0)" (click)="openeditCModal(data)"><i class="fas fa-edit text-crimary"></i></a>
+                                        <a href="javascript:void(0)" (click)="opendeleteCModal(data)"><i class="fas fa-trash text-danger"></i></a>
+                                </tr>
+                            </tbody>
+                          </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-info">
+                        <div class="row justify-content-between">
+                            <h3 class="card-title">{{'unit' | translate}}</h3> <a href="javascript:void(0)"><i (click)="opencreateUModal()" class="fa fa-plus text-white" style="font-size:16pt;"></i></a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr class="text-center">
+                              <!-- <th>{{'no' | translate}}</th> -->
+                              <th>{{'category' | translate}}</th>
+                              <th>{{'unit' | translate}}</th>
+                              <th>{{'action' | translate}}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let data of unitList | paginate: { itemsPerPage: 10, currentPage: page, totalItems: count}; index as i">
+                                  <!-- <td class="text-center">
+                                    <span *ngIf="page==1">{{(i+1)}}</span>
+                                    <span *ngIf="page>1">{{((page-1)*10)+(i+1)}}</span>
+                                  </td> -->
+                                  <td>{{data.category}}</td>
+                                  <td>{{data.name}}</td>
+                                  <td class="text-center">
+                                        <a href="javascript:void(0)" (click)="openeditUModal(data)"><i class="fas fa-edit text-crimary"></i></a>
+                                        <a href="javascript:void(0)" (click)="opendeleteUModal(data)"><i class="fas fa-trash text-danger"></i></a>
+                                </tr>
+                            </tbody>
+                          </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+              <div class="card">
+                <div class="card-header bg-info">
+                    <div class="row justify-content-between">
+                        <h3 class="card-title">{{'guarantee_property' | translate}}</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <a href="javascript:void(0)"><i (click)="opencreateModal()" class="fa fa-plus text-primary" style="font-size:16pt;"></i></a>
+                      <div class="col-md-5 d-flex justify-content-left align-items-center">
+                        {{'show' | translate}} 
+                        <select (change)="selectItem($event)" class="form-control">
+                            <option value="10">10</option>
+                            <option value="1">25</option>
+                            <option value="50">50</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1,000</option>
+                            <option value="">{{'total' | translate}}</option>
+                        </select>
+                       {{'item' | translate}}
+                      </div>
+                   </div>
+                   <div class="col-md-3">
+                     <div class="form-group">
+                        <label for="">{{'category' | translate}}</label>
+                        <select name="" id="" class="form-control" [(ngModel)]="searchCT">
+                            <option value="">{{'total' | translate}}</option>
+                            <option *ngFor="let b of categoryList" value="{{b.name}}">{{b.name}}</option>
+                          </select>
+                     </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'search' | translate}}</label>
+                          <input type="text" class="form-control" [(ngModel)]="searchT" placeholder="{{'search' | translate}}">
+                        </div>
+                    </div>
+                 </div>
+                  <div class="table-responsive mt-2" *ngIf="!loading">
+                    <table class="table table-bordered table-striped" style="white-space:nowrap;">
+                      <thead>
+                      <tr class="text-center">
+                        <!-- <th>{{'no' | translate}}</th> -->
+                        <th>{{'date' | translate}}</th>
+                        <th>{{'serialnumber' | translate}}</th>
+                        <th>{{'category' | translate}}</th>
+                        <th>{{'qty' | translate}}</th>
+                        <th>{{'detail' | translate}}</th>
+                        <th>{{'action' | translate}}</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let data of dataList | filter: searchT | filter : searchCT  | paginate: { itemsPerPage: tableSize, currentPage: page, totalItems: count}; index as i">
+                            <!-- <td class="text-center">
+                              <span *ngIf="page==1">{{(i+1)}}</span>
+                              <span *ngIf="page>1">{{((page-1)*10)+(i+1)}}</span>
+                            </td> -->
+                            <td>{{data.created_at | date: 'dd/MM/yyyy'}}</td>
+                            <td>{{data.serialnumber}}</td>
+                            <td>{{data.category}}</td>
+                            <td>{{data.qty}} {{data.unit}}</td>
+                            <td>{{data.detail}}</td>
+                            <td class="align-middle text-center">
+                              <i class="fas fa-edit text-primary" (click)="openeditModal(data)"></i>
+                              <i class="fas fa-trash text-danger" (click)="opendeleteModal(data)"></i>
+                            </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="text-center mt-2">
+                      <pagination-controls  previousLabel="Preview" nextLabel="Next" (pageChange)="page = ($event)"></pagination-controls>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center" *ngIf="loading">
+                  <img src="assets/img/loading.gif" alt="" width="100" height="100">
+               </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- /.modal-create -->
+      <div class="modal fade" id="modal-add"> 
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title">{{'add' | translate}}</h4>
+                  <button type="button" class="close" (click)="closecreateModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="form">
+                      <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'category' | translate}}</label>
+                              <select [ngClass]="{ 'is-invalid': submitted && f['category_id'].errors}" formControlName="category_id" [(ngModel)]="model.category_id"  (change)="onSelectedUnit($event)" class="form-control">
+                                <option value="">{{'select' | translate}}</option>
+                                <option *ngFor="let i of categoryList" value="{{i.id}}">{{i.name}}</option>
+                              </select>
+                              <div *ngIf="submitted && f['category_id'].errors" class="is-invalid">
+                                <span *ngIf="f['category_id'].errors['required']" class="text-danger">{{'required_error_message' | translate}}</span>
+                              </div>
+                            </div>
+                          </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'brand' | translate}}</label>
+                            <input  formControlName="brand" [(ngModel)]="model.brand" class="form-control" placeholder="{{'brand' | translate}}">
+                          </div>
+                       </div>
+                       <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'serialnumber' | translate}}</label>
+                          <input  formControlName="serialnumber" [(ngModel)]="model.serialnumber" class="form-control" placeholder="{{'serialnumber' | translate}}">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'qty' | translate}}</label>
+                          <input  formControlName="qty" [(ngModel)]="model.qty" class="form-control" placeholder="{{'qty' | translate}}">
+                        </div>
+                     </div>
+                     <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'gen' | translate}}</label>
+                          <input  formControlName="gen" [(ngModel)]="model.gen" class="form-control" placeholder="{{'gen' | translate}}">
+                        </div>
+                     </div>
+                     <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'enginenumber' | translate}}</label>
+                          <input type="number" minlength="1" formControlName="enginenumber" [(ngModel)]="model.enginenumber" class="form-control" placeholder="{{'enginenumber' | translate}}">
+                        </div>
+                     </div>
+                     <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'unit' | translate}}</label>
+                          <select [ngClass]="{ 'is-invalid': submitted && f['unit_id'].errors}" formControlName="unit_id" [(ngModel)]="model.unit_id" class="form-control">
+                            <option value="">{{'select' | translate}}</option>
+                            <option *ngFor="let i of getunitByIdList" [ngValue]="i.id">{{i.name}}</option>
+                          </select>
+                          <div *ngIf="submitted && f['unit_id'].errors" class="is-invalid">
+                            <span *ngIf="f['unit_id'].errors['required']" class="text-danger">{{'required_error_message' | translate}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'color' | translate}}</label>
+                          <input  formControlName="color" [(ngModel)]="model.color" class="form-control" placeholder="{{'color' | translate}}">
+                        </div>
+                     </div>
+                     <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">{{'takenumber' | translate}}</label>
+                          <input  formControlName="takenumber" [(ngModel)]="model.takenumber" class="form-control" placeholder="{{'takenumber' | translate}}">
+                        </div>
+                     </div>
+                     <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="">{{'detail' | translate}}</label>
+                          <input  formControlName="detail" [(ngModel)]="model.detail" class="form-control" placeholder="{{'detail' | translate}}">
+                        </div>
+                     </div>
+                    </div>
+                  </form>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-success" (click)="createData(model)"><i class="fas fa-clus"></i>&nbsp;{{'save' | translate}}</button>
+                          <button type="button" class="btn btn-danger" (click)="closecreateModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+      <!-- /.modal-edit -->
+      <div class="modal fade" id="modal-edit">
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fas fa-cencil-alt"></i>&nbsp;{{'edit' | translate}}</h4>
+                  <button type="button" class="close" (click)="closeeditModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="form">
+                        <div class="row">
+                          <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="">{{'category' | translate}}</label>
+                                <select [ngClass]="{ 'is-invalid': submitted && f['category_id'].errors}" formControlName="category_id" [(ngModel)]="model.category_id"  (change)="onSelectedUnit($event)" class="form-control">
+                                  <option value="">{{'select' | translate}}</option>
+                                  <option *ngFor="let i of categoryList" value="{{i.id}}">{{i.name}}</option>
+                                </select>
+                                <div *ngIf="submitted && f['category_id'].errors" class="is-invalid">
+                                  <span *ngIf="f['category_id'].errors['required']" class="text-danger">{{'required_error_message' | translate}}</span>
+                                </div>
+                              </div>
+                            </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'brand' | translate}}</label>
+                              <input  formControlName="brand" [(ngModel)]="model.brand" class="form-control" placeholder="{{'brand' | translate}}">
+                            </div>
+                         </div>
+                         <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="">{{'serialnumber' | translate}}</label>
+                            <input  formControlName="serialnumber" [(ngModel)]="model.serialnumber" class="form-control" placeholder="{{'serialnumber' | translate}}">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'qty' | translate}}</label>
+                            <input  formControlName="qty" [(ngModel)]="model.qty" class="form-control" placeholder="{{'qty' | translate}}">
+                          </div>
+                       </div>
+                       <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'gen' | translate}}</label>
+                            <input  formControlName="gen" [(ngModel)]="model.gen" class="form-control" placeholder="{{'gen' | translate}}">
+                          </div>
+                       </div>
+                       <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="">{{'enginenumber' | translate}}</label>
+                            <input type="number" minlength="1" formControlName="enginenumber" [(ngModel)]="model.enginenumber" class="form-control" placeholder="{{'enginenumber' | translate}}">
+                          </div>
+                       </div>
+                       <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'unit' | translate}}</label>
+                            <select [ngClass]="{ 'is-invalid': submitted && f['unit_id'].errors}" formControlName="unit_id" [(ngModel)]="model.unit_id" class="form-control">
+                              <option value="">{{'select' | translate}}</option>
+                              <option *ngFor="let i of getunitByIdList" [ngValue]="i.id">{{i.name}}</option>
+                            </select>
+                            <div *ngIf="submitted && f['unit_id'].errors" class="is-invalid">
+                              <span *ngIf="f['unit_id'].errors['required']" class="text-danger">{{'required_error_message' | translate}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'color' | translate}}</label>
+                            <input  formControlName="color" [(ngModel)]="model.color" class="form-control" placeholder="{{'color' | translate}}">
+                          </div>
+                       </div>
+                       <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="">{{'takenumber' | translate}}</label>
+                            <input  formControlName="takenumber" [(ngModel)]="model.takenumber" class="form-control" placeholder="{{'takenumber' | translate}}">
+                          </div>
+                       </div>
+                       <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="">{{'detail' | translate}}</label>
+                            <input  formControlName="detail" [(ngModel)]="model.detail" class="form-control" placeholder="{{'detail' | translate}}">
+                          </div>
+                       </div>
+                      </div>
+                    </form>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-warning" (click)="updateData(model)"><i class="fas fa-edit"></i>&nbsp;{{'edit' | translate}}</button>
+                          <button type="button" class="btn btn-danger" (click)="closecreateModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+      <!-- /.modal-detail -->
+      <!-- <div class="modal fade" id="modal-detail"> 
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fa fa-user"></i> {{'detail' | translate}}</h4>
+                  <button type="button" class="close" (click)="closedetailModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body">
+                             <div class="row">
+                                 <div class="col-md-3 justify-content-center align-items-center">
+                                      <i class="fa fa-user" style="font-size: 100pt;"></i>
+                                 </div>
+                                 <div class="col-md-9">
+                                     <table class="table">
+                                         <tr>
+                                             <td class="text-right"><b>{{'code' | translate}}:</b></td>
+                                             <td>{{model.code}}</td>
+                                         </tr>
+                                         <tr>
+                                            <td class="text-right"><b>{{'startdate' | translate}}:</b></td>
+                                            <td>{{model.startdate}}</td>
+                                         </tr>
+                                         <tr>
+                                            <td class="text-right"><b>{{'Category' | translate}}:</b></td>
+                                            <td>{{model.Category}}</td>
+                                         </tr>
+                                         <tr>
+                                            <td class="text-right"><b>{{'fullname' | translate}}:</b></td>
+                                            <td>{{model.firstname}} {{model.lastname}}</td>
+                                         </tr>
+                                         <tr>
+                                          <td class="text-right"><b>{{'phone' | translate}}:</b></td>
+                                          <td>{{model.firstname}} {{model.phone}}</td>
+                                         </tr>
+                                         <tr>
+                                          <td class="text-right"><b>{{'address' | translate}}:</b></td>
+                                          <td>{{model.address}}</td>
+                                         </tr>
+                                         <tr>
+                                          <td class="text-right"><b>{{'village' | translate}}, {{'district' | translate}}, {{'province' | translate}}:</b></td>
+                                          <td>{{model.vill_la}}, {{model.dis_la}}, {{model.pro_la}}</td>
+                                         </tr>
+                                         <tr>
+                                          <td class="text-right"><b>{{'codecard' | translate}}, {{'expirydate' | translate}}:</b></td>
+                                          <td>{{model.codecard}}, {{model.expirydate | date: 'dd/MM/yyyy'}}</td>
+                                         </tr>
+                                         <tr>
+                                          <td class="text-right"><b>{{'Category' | translate}}:</b></td>
+                                          <td>{{model.Category}}</td>
+                                         </tr>
+                                         <tr>
+                                          <td class="text-right"><b>{{'branch' | translate}}:</b></td>
+                                          <td>{{model.branch_la}}</td>
+                                         </tr>
+                                     </table>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-right">
+                        <button type="button" class="btn btn-danger" (click)="closedetailModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                    </div>
+                </div>
+              </div>
+        </div>
+      </div> -->
+      <!-- end -->
+       <!-- /.modal-delete -->
+       <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{'title_delete' | translate}}</h4>
+                  <button type="button" class="close" (click)="closedeleteModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                      <div class="row">
+                          <div class="col-md-12">
+                            <h4>{{model.category}} {{model.unit}}</h4>
+                            <h4>{{model.detail}}</h4>
+                          </div>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-danger" (click)="deleteData()"><i class="fas fa-trash"></i>&nbsp;{{'delete' | translate}}</button>
+                          <button type="button" class="btn btn-warning" (click)="closedeleteModal()" data-dismiss="modal"><i class="fas fa-cower-off"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+       <!-- /.modal-create-cosition -->
+       <div class="modal fade" id="modal-add-c">
+        <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title">&nbsp;{{'Category' | translate}}</h4>
+                  <button type="button" class="close" (click)="closecreateCModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                      <form [formGroup]="formC">
+                           <div class="row">
+                             <div class="col-md-12">
+                                  <div class="formc-group">
+                                     <label>{{'name' | translate}}</label>
+                                     <input [ngClass]="{ 'is-invalid': submittedC && fC['name'].errors}"  formControlName="name" [(ngModel)]="cmodel.name" class="form-control" placeholder="{{'name' | translate}}">
+                                     <div *ngIf="submittedC && fC['name'].errors" class="is-invalid">
+                                       <span *ngIf="fC['name'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                     </div>
+                                  </div>
+                             </div>
+                           </div>
+                      </form>
+                      <div class="d-flex justify-content-between mt-2">
+                          <button  type="button" class="btn btn-primary" (click)="createCategory(cmodel)"><i class="fas fa-plus"></i>&nbsp;{{'save' | translate}}</button>
+                          <button type="button" class="btn btn-warning" (click)="closecreateCModal()" data-dismiss="modal"><i class="fas fa-power-off"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+        <!-- /.modal-edit-cosition -->
+        <div class="modal fade" id="modal-edit-c">
+          <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header bg-info">
+                    <h4 class="modal-title">&nbsp;{{'edit' | translate}}?</h4>
+                    <button type="button" class="close" (click)="closeeditCModal()" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form [formGroup]="formC">
+                        <div class="row">
+                          <div class="col-md-12">
+                               <div class="formc-group">
+                                  <label>{{'name' | translate}}</label>
+                                  <input [ngClass]="{ 'is-invalid': submittedC && fC['name'].errors}"  formControlName="name" [(ngModel)]="cmodel.name" class="form-control" placeholder="{{'name' | translate}}">
+                                  <div *ngIf="submittedC && fC['name'].errors" class="is-invalid">
+                                    <span *ngIf="fC['name'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                  </div>
+                               </div>
+                          </div>
+                        </div>
+                   </form>
+                        <div class="d-flex justify-content-between mt-2">
+                            <button  type="button" class="btn btn-primary" (click)="updateCategory(cmodel)"><i class="fas fa-edit"></i>&nbsp;{{'edit' | translate}}</button>
+                            <button type="button" class="btn btn-danger" (click)="closeeditCModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                        </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+        <!-- end -->
+         <!-- /.modal-edit-cosition -->
+         <div class="modal fade" id="modal-delete-c">
+          <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header bg-info">
+                    <h4 class="modal-title">{{'title_delete' | translate}}?</h4>
+                    <button type="button" class="close" (click)="closedeleteCModal()" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                             <div class="row">
+                                <h3>{{cmodel.name}}</h3>
+                             </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <button  type="button" class="btn btn-danger" (click)="deleteCategory()"><i class="fas fa-trash"></i>&nbsp;{{'delete' | translate}}</button>
+                            <button type="button" class="btn btn-warning" (click)="closedeleteCModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                        </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+        <!-- end -->
+
+        <div class="modal fade" id="modal-add-u">
+            <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header bg-info">
+                      <h4 class="modal-title">&nbsp;{{'Category' | translate}}</h4>
+                      <button type="button" class="close" (click)="closecreateUModal()" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <form [formGroup]="formU">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="">{{'category' | translate}}</label>
+                                      <select [ngClass]="{ 'is-invalid': submittedU && fU['category_id'].errors}" formControlName="category_id" [(ngModel)]="umodel.category_id" class="form-control">
+                                        <option value="">{{'select' | translate}}</option>
+                                        <option *ngFor="let i of categoryList" [ngValue]="i.id">{{i.name}}</option>
+                                      </select>
+                                      <div *ngIf="submitted && fU['category_id'].errors" class="is-invalid">
+                                        <span *ngIf="fU['category_id'].errors['required']" class="text-danger">{{'required_error_message' | translate}}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                              <div class="col-md-12">
+                                <div class="formc-group">
+                                   <label>{{'name' | translate}}</label>
+                                   <input [ngClass]="{ 'is-invalid': submittedU && fC['name'].errors}"  formControlName="name" [(ngModel)]="umodel.name" class="form-control" placeholder="{{'name' | translate}}">
+                                   <div *ngIf="submittedU && fU['name'].errors" class="is-invalid">
+                                     <span *ngIf="fU['name'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                   </div>
+                                </div>
+                               </div>
+                            </div>
+                       </form>
+                          <div class="d-flex justify-content-between mt-2">
+                              <button  type="button" class="btn btn-primary" (click)="createUnit(umodel)"><i class="fas fa-plus"></i>&nbsp;{{'save' | translate}}</button>
+                              <button type="button" class="btn btn-warning" (click)="closecreateUModal()" data-dismiss="modal"><i class="fas fa-power-off"></i>&nbsp;{{'close' | translate}}</button>
+                          </div>
+                    </div>
+                  </div>
+            </div>
+          </div>
+          <!-- end -->
+            <!-- /.modal-edit-cosition -->
+            <div class="modal fade" id="modal-edit-u">
+              <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header bg-info">
+                        <h4 class="modal-title">&nbsp;{{'edit' | translate}}?</h4>
+                        <button type="button" class="close" (click)="closeeditUModal()" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form [formGroup]="formU">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                      <label for="">{{'category' | translate}}</label>
+                                      <select [ngClass]="{ 'is-invalid': submittedU && fU['category_id'].errors}" formControlName="category_id" [(ngModel)]="umodel.category_id" class="form-control">
+                                        <option value="">{{'select' | translate}}</option>
+                                        <option *ngFor="let i of categoryList" [ngValue]="i.id">{{i.name}}</option>
+                                      </select>
+                                      <div *ngIf="submitted && fU['category_id'].errors" class="is-invalid">
+                                        <span *ngIf="fU['category_id'].errors['required']" class="text-danger">{{'required_error_message' | translate}}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                              <div class="col-md-12">
+                                <div class="formc-group">
+                                   <label>{{'name' | translate}}</label>
+                                   <input [ngClass]="{ 'is-invalid': submittedU && fC['name'].errors}"  formControlName="name" [(ngModel)]="umodel.name" class="form-control" placeholder="{{'name' | translate}}">
+                                   <div *ngIf="submittedU && fU['name'].errors" class="is-invalid">
+                                     <span *ngIf="fU['name'].errors['required']" class="text-danger">{{'required_name' | translate}}</span>
+                                   </div>
+                                </div>
+                               </div>
+                            </div>
+                       </form>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button  type="button" class="btn btn-primary" (click)="updateUnit(umodel)"><i class="fas fa-edit"></i>&nbsp;{{'edit' | translate}}</button>
+                                <button type="button" class="btn btn-danger" (click)="closeeditUModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                            </div>
+                      </div>
+                    </div>
+              </div>
+            </div>
+            <!-- end -->
+             <!-- /.modal-edit-cosition -->
+             <div class="modal fade" id="modal-delete-u">
+              <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header bg-info">
+                        <h4 class="modal-title">{{'title_delete' | translate}}?</h4>
+                        <button type="button" class="close" (click)="closedeleteUModal()" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                                 <div class="row">
+                                    <h3>{{umodel.name}}</h3>
+                                 </div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button  type="button" class="btn btn-danger" (click)="deleteUnit()"><i class="fas fa-trash"></i>&nbsp;{{'delete' | translate}}</button>
+                                <button type="button" class="btn btn-warning" (click)="closedeleteUModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                            </div>
+                      </div>
+                    </div>
+              </div>
+            </div>
+            <!-- end -->
+    </div>
+

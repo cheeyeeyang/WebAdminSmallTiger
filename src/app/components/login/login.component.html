@@ -1,0 +1,59 @@
+<div class="wrapper h-100">
+  <div class="content-wrapper d-flex h-100 align-items-center justify-content-center">
+    <div class="login-box">
+      <!-- /.login-logo -->
+      <div class="card card-outline card-primary mt-4">
+        <div class="card-header text-center">
+           <img src="assets/img/logo.png"  style="width:150px;"/><br />
+          <a href="/" class="h1"><b>ເຂົ້າລະບົບ</b></a>
+        </div>
+        <div class="card-body">
+            <form [formGroup]="form">
+            <div class="input-group">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-user"></span>
+                </div>
+              </div>
+                <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f['username'].errors }" formControlName="username" [(ngModel)]="model.username"  placeholder="ຊື່ຜູ້ໃຊ້">
+            </div>
+            <div class="input-group mt-1">
+              <div *ngIf="submitted && f['username'].errors" class="is-invalid">
+                <span *ngIf="f['username'].errors['required']" class="text-danger">ໃສ່ຊື່ຜູ້ໃຊ້ກ່ອນ</span>
+              </div>
+            </div>
+            <div class="input-group mt-3">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+               </div>
+              <input type="password" [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" formControlName="password" [(ngModel)]="model.password" class="form-control"   placeholder="ລະຫັດຜ່ານ">
+            </div>
+            <div class="input-group mt-1">
+              <div *ngIf="submitted && f['password'].errors" class="is-invalid">
+                <span *ngIf="f['password'].errors['required']" class="text-danger">ໃສ່ຫະຫັດຜ່ານກ່ອນ</span>
+              </div>
+            </div>
+            <div *ngIf="checkLogin == 'active'; then trueBlock; else falseBlock"></div>
+             <ng-template #trueBlock>
+              <div class="text-center">
+                  <img src="assets/img/loading.gif" alt="" width="50" height="50">
+              </div>
+              </ng-template>
+              <ng-template #falseBlock>
+                    <div class="social-auth-links text-center mt-2 mb-3">
+                          <a class="btn btn-block btn-primary" (click)="login(model)">
+                                      <i class="fa fa-sign-in-alt mr-2"></i>ເຂົ້າລະບົບ
+                          </a>
+                    </div>
+              </ng-template>
+              <h5 class="text-danger text-center">{{logifailed}}</h5>
+          </form>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+  </div>
+  </div>
+</div>

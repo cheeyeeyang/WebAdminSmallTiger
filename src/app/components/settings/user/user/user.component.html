@@ -1,0 +1,481 @@
+<div ng-view>
+    <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h5><i class="fa fa-layer-group"></i>
+                {{'setting' | translate}}
+                <i class="fa fa-angle-double-right"></i>
+                  {{'user' | translate}}</h5>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a routerLink="/home">{{'home' | translate}}</a></li>
+                <li class="breadcrumb-item active">{{'user' | translate}}</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row mb-2">
+                    <div class="col-md-9">
+                      <a  class="btn btn-success" (click)="opencreateModal()"><i class="fa fa-plus"></i> {{'add' | translate}}</a>
+                   </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="search">{{'search' | translate}}</label>
+                          <input type="text" class="form-control" [(ngModel)]="searchT" placeholder="{{'search' | translate}}">
+                        </div>
+                    </div>
+                 </div>
+                  <div class="table-responsive mt-2" *ngIf="!loading">
+                    <table class="table table-bordered table-striped" style="white-space:nowrap;">
+                      <thead class="bg-info">
+                      <tr class="text-center">
+                        <th>{{'no' | translate}}</th>
+                        <th>{{'profile' | translate}}</th>
+                        <th>{{'fullname' | translate}}</th>
+                        <th>{{'phone' | translate}}</th>
+                        <th>{{'email' | translate}}</th>
+                        <th>{{'branch' | translate}}</th>
+                        <th>{{'action' | translate}}</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let data of dataList | filter: searchT | paginate: { itemsPerPage: 10, currentPage: page, totalItems: count}; index as i">
+                            <td class="text-center">
+                              <span *ngIf="page==1">{{(i+1)}}</span>
+                              <span *ngIf="page>1">{{((page-1)*10)+(i+1)}}</span>
+                            </td>
+                            <td class="text-center">
+                               <a href="{{data.profile}}" *ngIf="data.checkimg !='null'">
+                                <img src="{{data.profile}}" style="width:80;height: 80px;"/>
+                               </a>
+                                <a *ngIf="data.checkimg =='null'">
+                                  <img src="assets/img/profile.jpg" style="width:80;height: 80px;"/>
+                                </a>
+                            </td>
+                            <td class="align-middle align-text-left">{{data.username}} {{data.lastname}}</td>
+                            <td class="align-middle align-text-left" >{{data.phonenumber}}</td>
+                            <td class="align-middle align-text-left" >{{data.email}}</td>
+                            <td class="align-middle align-text-left" >{{data.branch_la}}</td>
+                            <td class="align-middle align-text-center">
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                               {{'action' | translate}}
+                              </button>
+                                <div class="dropdown-menu" role="menu">
+                                  <a class="dropdown-item"  (click)="openeditModal(data)"><i class="fas fa-pencil-alt text-warning"></i> {{'edit' | translate}}</a>
+                                  <a class="dropdown-item" (click)="opendetailModal(data)"><i class="fa fa-id-card text-info"></i> {{'detail' | translate}}</a>
+                                  <a class="dropdown-item" (click)="opendeleteModal(data)"><i class="fas fa-trash text-danger"></i> {{'delete' | translate}}</a>
+                                </div>
+                              </div>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="text-center mt-2">
+                      <pagination-controls  previousLabel="Preview" nextLabel="Next" (pageChange)="page = ($event)"></pagination-controls>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center" *ngIf="loading">
+                  <img src="assets/img/loading.gif" alt="" width="100" height="100">
+               </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- /.modal-create -->
+      <div class="modal fade" id="modal-add"> 
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fa fa-plus"></i> {{'add' | translate}}</h4>
+                  <button type="button" class="close" (click)="closecreateModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="form"  enctype="multipart/form-data"  autocomplete="off">
+                    <div class="row justify-content-center">
+                      <div class="d-flex flex-column text-center">
+                          <img [src]="imageUrl" width="100">
+                          <div class="col-md-12">
+                            <input class="form-control" type="file" id="img"  #Image accept="image/*" (change)="handleFileInput($any($event).target.files)" style="display:none;">
+                            <label for="img" class="btn btn-primary btn-sm mt-1"><i class="fa fa-camera"></i>&nbsp;{{'select_img' | translate}}</label>
+                          </div>
+                      </div>
+                    </div>
+                        <div class="row">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                <label for="">{{'username' | translate}}</label>
+                                <input [ngClass]="{ 'is-invalid': submitted && f['username'].errors}" formControlName="username" [(ngModel)]="model.username" class="form-control" placeholder="{{'username' | translate}}">
+                                <div *ngIf="submitted && f['username'].errors" class="is-invalid">
+                                  <span *ngIf="f['username'].errors['required']" class="text-danger">{{'required_username' | translate}}</span>
+                                </div>
+                              </div>
+                          </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="">{{'phone' | translate}}</label>
+                            <input [ngClass]="{ 'is-invalid': submitted && f['phonenumber'].errors}" minlength="8" maxlength="15" formControlName="phonenumber" [(ngModel)]="model.phonenumber" class="form-control" placeholder="{{'phone' | translate}}">
+                            <div *ngIf="submitted && f['phonenumber'].errors" class="is-invalid">
+                              <span *ngIf="f['phonenumber'].errors['required']" class="text-danger">{{'required_phone' | translate}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="">{{'email' | translate}}</label>
+                            <input [ngClass]="{ 'is-invalid': submitted && f['email'].errors}" formControlName="email" [(ngModel)]="model.email" class="form-control" placeholder="{{'email' | translate}}">
+                            <div *ngIf="submitted && f['email'].errors" class="is-invalid">
+                              <span *ngIf="f['email'].errors['required']" class="text-danger">{{'required_email' | translate}}</span>
+                            </div>
+                            <div *ngIf="submitted && f['email'].errors" class="is-invalid">
+                              <span *ngIf="f['email'].errors['email']" class="text-danger">example@gmail.com</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'password' | translate}}</label>
+                            <input type="password" [ngClass]="{ 'is-invalid': submitted && f['password'].errors}" formControlName="password" [(ngModel)]="model.password" class="form-control" placeholder="{{'password' | translate}}">
+                            <div *ngIf="submitted && f['password'].errors" class="is-invalid">
+                              <span *ngIf="f['password'].errors['required']" class="text-danger">{{'required_password' | translate}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                           <label>{{'role' | translate}}</label>
+                            <select class="form-control" [ngClass]="{ 'is-invalid': submitted && f['role'].errors }" formControlName="role" [(ngModel)]="role">
+                              <option value="">{{'select' | translate}}</option>
+                              <option value="Customer">Customer</option>
+                               <option value="Vendor">Vendor</option>
+                               <option value="Manager">Manager</option>
+                               <option value="Admin">Admin</option>
+                               <option value="SuperAdmin">SuperAdmin</option>
+                            </select>
+                            <div *ngIf="submitted && f['role'].errors" class="is-invalid">
+                              <span *ngIf="f['role'].errors['required']" class="text-danger">{{'required_status' | translate}}</span>
+                            </div>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                           <label>{{'employee' | translate}}</label>
+                            <select class="form-control" [ngClass]="{ 'is-invalid': submitted && f['emp_id'].errors }" formControlName="emp_id" [(ngModel)]="model.emp_id">
+                              <option value="">{{'select' | translate}}</option>
+                              <option value="Customer">Customer</option>
+                               <option value="Vendor">Vendor</option>
+                               <option value="Manager">Manager</option>
+                               <option value="Admin">Admin</option>
+                               <option value="SuperAdmin">SuperAdmin</option>
+                            </select>
+                            <div *ngIf="submitted && f['emp_id'].errors" class="is-invalid">
+                              <span *ngIf="f['emp_id'].errors['required']" class="text-danger">{{'required_status' | translate}}</span>
+                            </div>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                           <label>{{'branch' | translate}}</label>
+                            <select class="form-control" [ngClass]="{ 'is-invalid': submitted && f['branch_id'].errors }" formControlName="branch_id" [(ngModel)]="model.branch_id">
+                              <option value="">{{'select' | translate}}</option>
+                              <option value="Customer">Customer</option>
+                               <option value="Vendor">Vendor</option>
+                               <option value="Manager">Manager</option>
+                               <option value="Admin">Admin</option>
+                               <option value="SuperAdmin">SuperAdmin</option>
+                            </select>
+                            <div *ngIf="submitted && f['branch_id'].errors" class="is-invalid">
+                              <span *ngIf="f['branch_id'].errors['required']" class="text-danger">{{'required_status' | translate}}</span>
+                            </div>
+                           </div>
+                        </div>
+                    </div>
+                  </form>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-success" (click)="createData(model)"><i class="fas fa-plus"></i>&nbsp;{{'save' | translate}}</button>
+                          <button type="button" class="btn btn-danger" (click)="closecreateModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+      <!-- /.modal-edit -->
+      <div class="modal fade" id="modal-edit">
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fas fa-pencil-alt"></i>&nbsp;{{'edit' | translate}}</h4>
+                  <button type="button" class="close" (click)="closeeditModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="formedit"  enctype="multipart/form-data">
+                    
+                  </form>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-warning" (click)="updateData()"><i class="fas fa-edit"></i>&nbsp;{{'edit' | translate}}</button>
+                          <button type="button" class="btn btn-danger" (click)="closecreateModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+      <!-- /.modal-detail -->
+      <!-- <div class="modal fade" id="modal-detail"> 
+        <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h4 class="modal-title"><i class="fa fa-id-card"></i> {{'detail' | translate}}</h4>
+                  <button type="button" class="close" (click)="closedetailModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="form">
+                    <div class="row justify-content-center">
+                      <div class="d-flex flex-column text-center">
+                        <a href="{{model.profile}}" *ngIf="model.checkimg !=null">
+                          <img src="{{model.profile}}" class="img-fluid w-50" alt="profile"/>
+                         </a>
+                          <a *ngIf="model.checkimg ==null">
+                            <img src="assets/img/profile.jpg" class="img-fluid w-50" alt="Profile"/>
+                          </a>
+                      </div>
+                    </div>
+                        <div class="row">
+                          <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="">{{'code' | translate}}</label>
+                                <input formControlName="code" [(ngModel)]="model.code" class="form-control" placeholder="{{'code' | translate}}" readonly>
+                              </div>
+                          </div>
+                          <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="">{{'username' | translate}}</label>
+                                <input formControlName="username" [(ngModel)]="model.username" class="form-control" placeholder="{{'username' | translate}}" readonly>
+                              </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'lastname' | translate}}</label>
+                              <input formControlName="lastname" [(ngModel)]="model.lastname" class="form-control" placeholder="{{'lastname' | translate}}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'birthday' | translate}}</label>
+                            <input value="{{model.birthday | date:'dd/MM/yyyy hh:mm:a'}}" class="form-control"  readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'phone' | translate}}</label>
+                            <input [(ngModel)]="model.phonenumber" class="form-control" placeholder="{{'phone' | translate}}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'email' | translate}}</label>
+                            <input  formControlName="email" [(ngModel)]="model.email" class="form-control" placeholder="{{'email' | translate}}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="">{{'ethnicity' | translate}}</label>
+                                <input  formControlName="ethnicity" [(ngModel)]="model.ethnicity" class="form-control" placeholder="{{'ethnicity' | translate}}" readonly>
+                              </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'religion' | translate}}</label>
+                            <input  formControlName="religion" [(ngModel)]="model.religion" class="form-control" placeholder="{{'religion' | translate}}" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'born_village' | translate}}</label>
+                              <input  formControlName="bornvillage" [(ngModel)]="model.bornvillage" class="form-control" placeholder="{{'born_village' | translate}}" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'born_district' | translate}}</label>
+                              <input  formControlName="borndistrict" [(ngModel)]="model.borndistrict" class="form-control" placeholder="{{'born_district' | translate}}" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'born_province' | translate}}</label>
+                              <input  formControlName="bornprovince" [(ngModel)]="model.bornprovince" class="form-control" placeholder="{{'born_province' | translate}}" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'village' | translate}}</label>
+                              <input  formControlName="village" [(ngModel)]="model.bornvillage" class="form-control" placeholder="{{'village' | translate}}" readonly>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'district' | translate}}</label>
+                            <input  formControlName="district" [(ngModel)]="model.district" class="form-control" placeholder="{{'district' | translate}}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'province' | translate}}</label>
+                            <input  formControlName="province" [(ngModel)]="model.province" class="form-control" placeholder="{{'province' | translate}}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'subject' | translate}}</label>
+                            <input  formControlName="subject" [(ngModel)]="model.subject" class="form-control" placeholder="{{'subject' | translate}}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="">{{'theory' | translate}}</label>
+                            <input  formControlName="theory" [(ngModel)]="model.theory" class="form-control" placeholder="{{'theory' | translate}}" readonly>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'date_start_work' | translate}}</label>
+                          <input  value="{{model.datestartwork | date:'dd/MM/yyyy hh:mm:a'}}" class="form-control" placeholder="{{'date_start_work' | translate}}" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'youth_date' | translate}}</label>
+                          <input value="{{model.youthdate| date:'dd/MM/yyyy hh:mm:a'}}" class="form-control" readonly >
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'committee_date' | translate}}</label>
+                          <input value="{{model.committeedate | date:'dd/MM/yyyy hh:mm:a'}}" class="form-control" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'woman_date' | translate}}</label>
+                          <input  value="{{model.womandate | date:'dd/MM/yyyy hh:mm:a'}}" class="form-control" readonly>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'reverve_party_date' | translate}}</label>
+                          <input value="{{model.revervepartydate | date:'dd/MM/yyyy hh:mm:a'}}" class="form-control" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'perfect_party_date' | translate}}</label>
+                          <input value="{{model.perfectpartydate | date:'dd/MM/yyyy hh:mm:a'}}" class="form-control" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="">{{'organization_position' | translate}}</label>
+                              <input   formControlName="organization" [(ngModel)]="model.organization" class="form-control" readonly>
+                            </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="">{{'party_position' | translate}}</label>
+                          <input   formControlName="party" [(ngModel)]="model.party" class="form-control" readonly>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="">{{'goverment_position' | translate}}</label>
+                        <input   formControlName="goverment" [(ngModel)]="model.goverment" class="form-control" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="">{{'mass_position' | translate}}</label>
+                        <input formControlName="massorganization" [(ngModel)]="model.massorganization" class="form-control" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="">{{'username' | translate}}</label>
+                        <input   formControlName="username" [(ngModel)]="model.username" class="form-control" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="">{{'note' | translate}}</label>
+                        <input  formControlName="note" [(ngModel)]="model.note" class="form-control"  readonly>
+                      </div>
+                    </div>
+                  </div>
+                  </form>
+                      <div class="d-flex justify-content-between">
+                          <button type="button" class="btn btn-danger" (click)="closedetailModal()" data-dismiss="modal"><i class="fas fa-times"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div> -->
+      <!-- end -->
+       <!-- /.modal-delete -->
+       <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{'title_delete' | translate}}</h4>
+                  <button type="button" class="close" (click)="closedeleteModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                      <div class="row">
+                          <div class="col-md-12">
+                            <h4>{{model.username}} {{model.lastname}}</h4>
+                            <h4>{{model.email}}</h4>
+                          </div>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                          <button  type="button" class="btn btn-danger" (click)="deleteData()"><i class="fas fa-trash"></i>&nbsp;{{'delete' | translate}}</button>
+                          <button type="button" class="btn btn-warning" (click)="closedeleteModal()" data-dismiss="modal"><i class="fas fa-power-off"></i>&nbsp;{{'close' | translate}}</button>
+                      </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <!-- end -->
+    </div>
+
